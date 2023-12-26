@@ -1,7 +1,16 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
 
-def extract_reviews_and_ratings_to_dataframe(file_path):
+def extract_reviews_and_ratings_to_dataframe(file_path) -> pd.DataFrame:
+    """
+    Extracts reviews and ratings from an XML file and returns them as a pandas DataFrame.
+
+    Parameters:
+    file_path (str): The path to the XML file.
+
+    Returns:
+    pandas.DataFrame: A DataFrame containing the extracted reviews and ratings.
+    """
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             xml_content = file.read()
