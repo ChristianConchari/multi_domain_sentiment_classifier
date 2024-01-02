@@ -1,71 +1,72 @@
-import pickle
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+import nltk
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from joblib import dump, load
 
 class TextVectorizer:
-    """
-    TextVectorizer is a class for converting a collection of text documents to a matrix of token counts
-    and transforming this count matrix to a tf-idf representation.
-
-    Attributes:
-        count_vect (CountVectorizer): Instance of CountVectorizer.
-        tfidf_transformer (TfidfTransformer): Instance of TfidfTransformer.
-    """
-
-    def __init__(self):
+    def __init__(self, use_default_stopwords=True, custom_stopwords=None):
         """
-        Initializes the TextVectorizer with CountVectorizer and TfidfTransformer instances.
+        Initialize the TextVectorizer class.
+
+        Parameters:
+        - use_default_stopwords (bool): Whether to use default English stopwords. Default is True.
+        - custom_stopwords (list): List of custom stopwords. Default is None.
+
+        Returns:
+        None
         """
-        self.count_vect = CountVectorizer()
-        self.tfidf_transformer = TfidfTransformer()
+        if use_default_stopwords:
+            nltk.download('stopwords', quiet=True)
+            english_stopwords = stopwords.words('english')
+        else:
+            english_stopwords = custom_stopwords or []
+
+        self.vectorizer = TfidfVectorizer(stop_words=english_stopwords)
 
     def fit_transform(self, corpus):
         """
-        Fits the vectorizer to the provided corpus and transforms it into tf-idf representation.
+        Fit the vectorizer to the given corpus and transform it into a TF-IDF matrix.
 
-        Args:
-            corpus (list of str): A list of text documents.
-
-        Returns:
-            scipy.sparse.csr.csr_matrix: The tf-idf representation of the corpus.
-        """
-        X_train_counts = self.count_vect.fit_transform(corpus)
-        X_train_tfidf = self.tfidf_transformer.fit_transform(X_train_counts)
-        return X_train_tfidf
-
-    def transform(self, new_corpus):
-        """
-        Transforms a new corpus into the tf-idf representation based on the fitted vectorizer.
-
-        Args:
-            new_corpus (list of str): A new list of text documents.
+        Parameters:
+        - corpus (list): List of text documents.
 
         Returns:
-            scipy.sparse.csr.csr_matrix: The tf-idf representation of the new corpus.
+        - tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF matrix representation of the corpus.
         """
-        X_new_counts = self.count_vect.transform(new_corpus)
-        X_new_tfidf = self.tfidf_transformer.transform(X_new_counts)
-        return X_new_tfidf
+        return self.vectorizer.fit_transform(corpus)
 
-    def save(self, filepath):
+    def transform(self, corpus):
         """
-        Saves the state of the vectorizer to a file.
+        Transform the given corpus into a TF-IDF matrix using the fitted vectorizer.
 
-        Args:
-            filepath (str): The path where the vectorizer state will be saved.
-        """
-        with open(filepath, 'wb') as file:
-            pickle.dump(self, file)
-
-    @staticmethod
-    def load(filepath):
-        """
-        Loads a TextVectorizer from a file.
-
-        Args:
-            filepath (str): The path to the file containing the saved state.
+        Parameters:
+        - corpus (list): List of text documents.
 
         Returns:
-            TextVectorizer: The loaded TextVectorizer object.
+        - tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF matrix representation of the corpus.
         """
-        with open(filepath, 'rb') as file:
-            return pickle.load(file)
+        return self.vectorizer.transform(corpus)
+
+    def save_vectorizer(self, filepath):
+        """
+        Save the fitted vectorizer to a file.
+
+        Parameters:
+        - filepath (str): Path to save the vectorizer file.
+
+        Returns:
+        None
+        """
+        dump(self.vectorizer, filepath)
+
+    def load_vectorizer(self, filename):
+        """
+        Load a saved vectorizer from a file.
+
+        Parameters:
+        - filename (str): Name of the vectorizer file to load.
+
+        Returns:
+        None
+        """
+        self.vectorizer = load(filename)
