@@ -4,15 +4,16 @@ from sklearn.utils import resample
 from sklearn.model_selection import train_test_split
 
 
-def extract_reviews_and_ratings_to_dataframe(file_path):
+def extract_reviews_and_ratings_to_dataframe(file_path: str, category: str) -> DataFrame:
     """
-    Extracts reviews and ratings from an XML file and returns them as a pandas DataFrame.
+    Extracts reviews and ratings from an XML file and returns them as a DataFrame.
 
     Parameters:
-    file_path (str): The path to the XML file.
+    - file_path (str): The path to the XML file.
+    - category (str): The category of the reviews.
 
     Returns:
-    pandas.DataFrame: A DataFrame containing the extracted reviews and ratings.
+    - DataFrame: A pandas DataFrame containing the extracted data, with columns for review text, rating, category, and review class.
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -29,7 +30,8 @@ def extract_reviews_and_ratings_to_dataframe(file_path):
             review_xml = fromstring(review + '</review>')
             review_text = review_xml.find('review_text').text.strip() if review_xml.find('review_text') is not None else ''
             rating = review_xml.find('rating').text.strip() if review_xml.find('rating') is not None else ''
-            data.append({'review_text': review_text, 'rating': rating})
+            review_class = '1' if float(rating) > 3 else '0'
+            data.append({'review_text': review_text, 'rating': rating, 'category': category, 'review_class': review_class})
         except ParseError:
             continue
 
