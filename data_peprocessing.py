@@ -74,24 +74,3 @@ def balance_dataframe(df: DataFrame, class_column: str, threshold: Optional[int]
     balanced_df = concat(resampled_dfs).sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     return balanced_df
-
-
-def split_data(df, test_size=0.2, random_state=42):
-    """
-    Split the data into training and testing sets.
-
-    Parameters:
-    - df: DataFrame containing the data.
-    - test_size: The proportion of the data to be used for testing (default: 0.2).
-    - random_state: The seed used by the random number generator (default: 42).
-
-    Returns:
-    - X_train: The training data.
-    - X_test: The testing data.
-    - y_train: The labels for the training data.
-    - y_test: The labels for the testing data.
-    """
-    X = df['review_text'].tolist()
-    y = df['rating']
-
-    return train_test_split(X, y, test_size=test_size, random_state=random_state)
