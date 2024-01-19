@@ -2,6 +2,8 @@ from pandas import DataFrame, concat
 from xml.etree.ElementTree import ParseError, fromstring
 from sklearn.utils import resample
 from sklearn.model_selection import train_test_split
+from numpy import percentile
+from typing import Optional
 
 
 def extract_reviews_and_ratings_to_dataframe(file_path: str, category: str) -> DataFrame:
@@ -37,41 +39,39 @@ def extract_reviews_and_ratings_to_dataframe(file_path: str, category: str) -> D
 
     return DataFrame(data)
 
-def balance_dataframe(df, class_column, threshold, random_state=123):
+def balance_dataframe(df: DataFrame, class_column: str, threshold: Optional[int] = None, random_state: Optional[int] = 123) -> DataFrame:
     """
-    Balance a DataFrame by resampling classes to a threshold.
+    Balances the given DataFrame by resampling the minority classes to match the size of the majority class.
 
     Parameters:
-    df (pd.DataFrame): The DataFrame to balance.
-    class_column (str): The column name of the class labels.
-    threshold (int): The number of samples each class should have.
-    random_state (int): The random state for reproducibility.
+        df (pandas.DataFrame): The input DataFrame.
+        class_column (str): The name of the column containing the class labels.
+        threshold (int, optional): The minimum size of the minority class. If not provided, it is calculated as the first quartile size of the class sizes.
+        random_state (int, optional): The random seed for reproducibility.
 
     Returns:
-    pd.DataFrame: The balanced DataFrame.
+        pandas.DataFrame: The balanced DataFrame.
+
     """
+    # Calculate first quartile size if threshold is not provided
+    if threshold is None:
+        class_sizes = df[class_column].value_counts()
+        threshold = percentile(class_sizes, 5)
+
     # Split the DataFrame into a dictionary of DataFrames for each class
     class_dfs = {cls: df[df[class_column] == cls] for cls in df[class_column].unique()}
 
     # Resample each DataFrame
     resampled_dfs = []
     for cls, cls_df in class_dfs.items():
-        if len(cls_df) > threshold:
-            # Downsample classes above the threshold
-            resampled_cls_df = resample(cls_df,
-                                        replace=False,
-                                        n_samples=threshold,
-                                        random_state=random_state)
-        else:
-            # Upsample classes below the threshold
-            resampled_cls_df = resample(cls_df,
-                                        replace=True,
-                                        n_samples=threshold,
-                                        random_state=random_state)
+        resampled_cls_df = resample(cls_df,
+                                    replace=len(cls_df) < threshold,
+                                    n_samples=int(threshold),
+                                    random_state=random_state)
         resampled_dfs.append(resampled_cls_df)
 
-    # Combine into a new DataFrame
-    balanced_df = concat(resampled_dfs)
+    # Combine into a new DataFrame and reset index
+    balanced_df = concat(resampled_dfs).sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     return balanced_df
 
