@@ -2,7 +2,7 @@
 from pandas import DataFrame, Series
 from sklearn.metrics import classification_report, accuracy_score
 from matplotlib import pyplot as plt
-from seaborn import sns
+from seaborn import heatmap
 from sklearn.metrics import confusion_matrix
 from numpy import newaxis, ndarray
 from typing import Optional, List
@@ -44,7 +44,7 @@ def plot_confusion_matrix(y_true: Series, y_pred: ndarray, model_name: str,  cla
         fmt = 'd'
 
     plt.figure(figsize=(10, 8))
-    sns.heatmap(cfm, annot=True, fmt=fmt, cmap='Blues', xticklabels=classes, yticklabels=classes)
+    heatmap(cfm, annot=True, fmt=fmt, cmap='Blues', xticklabels=classes, yticklabels=classes)
 
     plt.title(f'Confusion Matrix for {model_name}')
     plt.ylabel('True label')
