@@ -1,7 +1,7 @@
 
 from pandas import DataFrame, Series
 from sklearn.metrics import classification_report, accuracy_score
-from matplotlib.pyplot import plt
+from matplotlib import pyplot as plt
 from seaborn import sns
 from sklearn.metrics import confusion_matrix
 from numpy import newaxis, ndarray
