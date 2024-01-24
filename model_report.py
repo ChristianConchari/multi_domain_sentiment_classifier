@@ -8,6 +8,17 @@ from numpy import newaxis, ndarray
 from typing import Optional, List
 
 def add_model_report(y_true: Series, y_pred: ndarray, model_name: str) -> DataFrame:
+    """
+    Generates a model report DataFrame based on the true labels, predicted labels, and model name.
+
+    Args:
+        y_true (pandas.Series): The true labels.
+        y_pred (numpy.ndarray): The predicted labels.
+        model_name (str): The name of the model.
+
+    Returns:
+        pandas.DataFrame: The model report DataFrame.
+    """
     report_dict = classification_report(y_true, y_pred, output_dict=True)
 
     model_report_df = DataFrame(report_dict).transpose()
@@ -35,6 +46,19 @@ def add_model_report(y_true: Series, y_pred: ndarray, model_name: str) -> DataFr
     return model_report_df
 
 def plot_confusion_matrix(y_true: Series, y_pred: ndarray, model_name: str,  classes: Optional[List[int]] = [0, 1], normalize:Optional[bool]=False) -> None:
+    """
+    Plots the confusion matrix for a given model's predictions.
+
+    Parameters:
+    - y_true (pandas.Series): The true labels.
+    - y_pred (numpy.ndarray): The predicted labels.
+    - model_name (str): The name of the model.
+    - classes (Optional[List[int]]): The list of class labels. Default is [0, 1].
+    - normalize (Optional[bool]): Whether to normalize the confusion matrix. Default is False.
+
+    Returns:
+    - None
+    """
     cfm = confusion_matrix(y_true, y_pred)
 
     if normalize:
