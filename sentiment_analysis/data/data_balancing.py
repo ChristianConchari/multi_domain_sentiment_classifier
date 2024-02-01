@@ -1,7 +1,8 @@
+from typing import Optional
 from pandas import DataFrame, concat
 from sklearn.utils import resample
 from numpy import percentile
-from typing import Optional
+
 
 def balance_dataframe(df: DataFrame, class_column: str, threshold: Optional[int] = None, random_state: Optional[int] = 123) -> DataFrame:
     """
