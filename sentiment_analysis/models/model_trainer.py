@@ -1,3 +1,9 @@
+"""
+This module contains the ModelTrainer class, which is used to train and evaluate
+machine learning models using scikit-learn. 
+The class can also save and load trained models to/from files.
+"""
+
 from joblib import dump, load
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import GridSearchCV
@@ -20,7 +26,8 @@ class ModelTrainer:
         Trains the model using the provided training data. Optionally performs grid search.
 
     evaluate(X_test, y_test)
-        Evaluates the model on the test dataset and returns a dictionary with accuracy, report, and predictions.
+        Evaluates the model on the test dataset and returns a dictionary with accuracy, 
+        report, and predictions.
 
     save_model(filename)
         Saves the trained model to a file.
@@ -29,7 +36,7 @@ class ModelTrainer:
         Loads a model from a file.
     """
 
-    def __init__(self, Classifier, params):
+    def __init__(self, classifier, params):
         """
         Initializes the ModelTrainer with a classifier and its parameters.
 
@@ -41,9 +48,9 @@ class ModelTrainer:
         params : dict
             Parameters to initialize the classifier.
         """
-        self.model = Classifier(**params)
+        self.model = classifier(**params)
 
-    def train(self, X_train, y_train, use_grid_search=False, grid_params=None):
+    def train(self, x_train, y_train, use_grid_search=False, grid_params=None):
         """
         Trains the model using the provided training data.
 
@@ -66,12 +73,12 @@ class ModelTrainer:
         """
         if use_grid_search and grid_params:
             grid_search = GridSearchCV(self.model, grid_params, cv=5)
-            grid_search.fit(X_train, y_train)
+            grid_search.fit(x_train, y_train)
             self.model = grid_search.best_estimator_
         else:
-            self.model.fit(X_train, y_train)
+            self.model.fit(x_train, y_train)
 
-    def evaluate(self, X_test, y_test):
+    def evaluate(self, x_test, y_test):
         """
         Evaluates the model on the test dataset.
 
@@ -88,7 +95,7 @@ class ModelTrainer:
         dict
             A dictionary containing the model's accuracy, classification report, and predictions.
         """
-        predictions = self.model.predict(X_test)
+        predictions = self.model.predict(x_test)
         accuracy = accuracy_score(y_test, predictions)
         report = classification_report(y_test, predictions)
         return {"accuracy": accuracy, "report": report, "predictions": predictions}
