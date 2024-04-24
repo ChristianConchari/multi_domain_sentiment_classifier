@@ -4,14 +4,20 @@ from sklearn.utils import resample
 from numpy import percentile
 
 
-def balance_dataframe(df: DataFrame, class_column: str, threshold: Optional[int] = None, random_state: Optional[int] = 123) -> DataFrame:
+def balance_dataframe(
+    df: DataFrame,
+    class_column: str,
+    threshold: Optional[int] = None,
+    random_state: Optional[int] = 123
+    ) -> DataFrame:
     """
     Balances the given DataFrame by resampling the minority classes to match the size of the majority class.
 
     Parameters:
         df (pandas.DataFrame): The input DataFrame.
         class_column (str): The name of the column containing the class labels.
-        threshold (int, optional): The minimum size of the minority class. If not provided, it is calculated as the first quartile size of the class sizes.
+        threshold (int, optional): The minimum size of the minority class. If not provided, 
+            it is calculated as the first quartile size of the class sizes.
         random_state (int, optional): The random seed for reproducibility.
 
     Returns:
